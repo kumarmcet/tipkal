@@ -21,10 +21,6 @@ class ViewController: UIViewController , UITextFieldDelegate{
         billAmount.becomeFirstResponder()
         
     }
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        billAmount.resignFirstResponder()
-        return true
-    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
