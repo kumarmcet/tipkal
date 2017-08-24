@@ -33,8 +33,6 @@ class ViewController: UIViewController , UITextFieldDelegate{
         }
         billAmount.becomeFirstResponder()
         
-        print("Re-loading \n ****** *\n*******\n *****");
-
     }
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         billAmount.resignFirstResponder()
