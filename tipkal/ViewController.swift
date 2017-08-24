@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController , UITextFieldDelegate{
     @IBOutlet weak var billAmount: UITextField!
     @IBOutlet weak var tipAmount: UILabel!
     @IBOutlet weak var totalAmount: UILabel!
@@ -18,6 +18,27 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        let savedDefaults = UserDefaults.standard
+        let defaultLastBill = savedDefaults.double(forKey: "last_bill_amount")
+        var defaultLastTipIndex = savedDefaults.integer(forKey: "default_tip_percent_index");
+
+        if( defaultLastTipIndex <= 0 ) {
+            defaultLastTipIndex = 1;
+        }
+        percentChooser.selectedSegmentIndex = defaultLastTipIndex;
+
+        if defaultLastBill > 0.0 {
+            billAmount.text = String(defaultLastBill)
+            TipChanged(self)
+        }
+        billAmount.becomeFirstResponder()
+        
+        print("Re-loading \n ****** *\n*******\n *****");
+
+    }
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        billAmount.resignFirstResponder()
+        return true
     }
     
 
@@ -25,25 +46,14 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-/*    @IBAction func tapped(_ sender: Any) {
-        view.endEditing(true);
-        print("Tapped")
-    }
-*/
-    @IBAction func billchanged(_ sender: Any) {
-        //let tipPercents = [15,18,25,30]
-        //print( "selected Percent",String(tipPercents[1]));
-        tipAmount.text = "A1";// String(tipPercents[1]);
+    @IBAction func editingEnded(_ sender: Any) {
+                billAmount.resignFirstResponder()
     }
 
     @IBAction func tappedEvent(_ sender: Any) {
         view.endEditing(true)
     }
-    @IBAction func BillChanged(_ sender: Any) {
-        print("inside Bill change\n")
-        TipChanged(sender)
-    }
+    
     @IBAction func TipChanged(_ sender: Any) {
         let tipPercents = [0.15,0.18,0.25,0.30]
         let initialBill = Double(billAmount.text!) ?? 0
@@ -51,6 +61,11 @@ class ViewController: UIViewController {
         
         tipAmount.text = String(format: "$%.2f",tip);
         totalAmount.text = String(format: "$%.2f",tip+initialBill);
+
+        let newDefaults = UserDefaults.standard
+        newDefaults.set(initialBill, forKey: "last_bill_amount")
+        newDefaults.synchronize()
+
     }
 }
 
