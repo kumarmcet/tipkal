@@ -18,19 +18,6 @@ class ViewController: UIViewController , UITextFieldDelegate{
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        let savedDefaults = UserDefaults.standard
-        let defaultLastBill = savedDefaults.double(forKey: "last_bill_amount")
-        var defaultLastTipIndex = savedDefaults.integer(forKey: "default_tip_percent_index");
-
-        if( defaultLastTipIndex <= 0 ) {
-            defaultLastTipIndex = 1;
-        }
-        percentChooser.selectedSegmentIndex = defaultLastTipIndex;
-
-        if defaultLastBill > 0.0 {
-            billAmount.text = String(defaultLastBill)
-            TipChanged(self)
-        }
         billAmount.becomeFirstResponder()
         
     }
@@ -39,6 +26,39 @@ class ViewController: UIViewController , UITextFieldDelegate{
         return true
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        print("view will appear")
+
+        let savedDefaults = UserDefaults.standard
+        let defaultLastBill = savedDefaults.double(forKey: "last_bill_amount")
+        let defaultLastTipIndex = savedDefaults.integer(forKey: "default_tip_percent_index");
+
+        percentChooser.selectedSegmentIndex = defaultLastTipIndex;
+        
+        if defaultLastBill > 0.0 {
+            billAmount.text = String(defaultLastBill)
+            TipChanged(self)
+        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        print("view did appear")
+        billAmount.becomeFirstResponder()
+
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        print("view will disappear")
+        // Store the current bill in the last bill amount field
+
+        let initialBill = Double(billAmount.text!) ?? 0
+        let newDefaults = UserDefaults.standard
+        newDefaults.set(initialBill, forKey: "last_bill_amount")
+        newDefaults.synchronize()
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -59,11 +79,7 @@ class ViewController: UIViewController , UITextFieldDelegate{
         
         tipAmount.text = String(format: "$%.2f",tip);
         totalAmount.text = String(format: "$%.2f",tip+initialBill);
-
-        let newDefaults = UserDefaults.standard
-        newDefaults.set(initialBill, forKey: "last_bill_amount")
-        newDefaults.synchronize()
-
+        
     }
 }
 
